@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BE_ToDoListApp.Domain\BE_ToDoListApp.Domain.csproj" />
+    <ProjectReference Include="..\BE_ToDoListApp.SharedLibrary\BE_ToDoListApp.SharedLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\TaskStatisticDTO\" />
+  </ItemGroup>
+
+</Project>
