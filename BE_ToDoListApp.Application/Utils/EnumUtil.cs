@@ -23,21 +23,5 @@ namespace BE_ToDoListApp.Application.Utils
         {
             return Enum.GetValues(typeof(T)).Cast<T>();
         }
-
-        //public static string GetDescriptionFromEnum<T>(this T value)
-        //{
-        //    if (value == null) return string.Empty;
-        //    var fi = value?.GetType().GetField(value.ToString());
-        //    if (fi != null)
-        //    {
-        //        var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-        //        if (attributes.Length > 0)
-        //        {
-        //            return attributes[0].Description;
-        //        }
-        //    }
-
-        //    return value.ToString();
-        //}
     }
 }

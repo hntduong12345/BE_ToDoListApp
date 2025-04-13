@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using BE_ToDoListApp.Application.Services.Interfaces;
 using BE_ToDoListApp.Application.Services.Implements;
 using Microsoft.AspNetCore.Http;
+using BE_ToDoListApp.Infrastructure.BackGroundServices.Services;
+using BE_ToDoListApp.Infrastructure.BackGroundServices.BackgroundJobs;
 
 namespace BE_ToDoListApp.Infrastructure.DependencyInjections
 {
@@ -24,6 +26,10 @@ namespace BE_ToDoListApp.Infrastructure.DependencyInjections
 
             //Setup UoW
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            //Background Services
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<QueuedHostedService>();
 
             #region Services
             services.AddScoped<IUserService, UserService>();

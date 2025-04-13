@@ -20,10 +20,10 @@ namespace BE_ToDoListApp.Application.Services.Implements
         public async Task<AuthDTO> SignIn(SignInDTO data)
         {
             User user = await _unitOfWork.GetRepository<User>().GetAsync(
-            predicate: u => u.Email == data.email);
+            predicate: u => u.Email == data.Email);
             if (user == null) throw new UnauthorizedAccessException("Email is not found");
 
-            if (!HashUtil.VerifyPassword(data.password, user.Password, out var rehashedPassword))
+            if (!HashUtil.VerifyPassword(data.Password, user.Password, out var rehashedPassword))
                 throw new UnauthorizedAccessException("Invalid Email or Password");
 
             if (rehashedPassword != null)
@@ -37,7 +37,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
             string token = JwtUtil.GenerateJwtToken(user);
 
-            return new AuthDTO(token);
+            return new AuthDTO(token, HashUtil.EncryptId(user.Id));
         }
 
         public async Task<AuthDTO> SignUp(SignUpDTO data)
@@ -54,7 +54,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
             string token = JwtUtil.GenerateJwtToken(createdUser);
 
-            return new AuthDTO(token);
+            return new AuthDTO(token, HashUtil.EncryptId(createdUser.Id));
         }
         #endregion
     }

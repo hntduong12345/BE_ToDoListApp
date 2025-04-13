@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BE_ToDoListApp.Domain.Enums.ToDoTaskEnums
 {
-    class ToDoTaskStatusEnum
+    public enum ToDoTaskStatusEnum : byte
     {
+        NotStarted = 1,
+        InProgress = 2,
+        Completed = 3,
     }
 }

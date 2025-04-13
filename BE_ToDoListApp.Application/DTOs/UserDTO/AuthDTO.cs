@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 namespace BE_ToDoListApp.Application.DTOs.UserDTO
 {
     public record AuthDTO(
-        string token);
+        string Token,
+        string userId);
 
     public record SignInDTO(
-        [Required] string email,
-        [Required] string password
+        [Required] string Email,
+        [Required] string Password
         );
 
     public record SignUpDTO(

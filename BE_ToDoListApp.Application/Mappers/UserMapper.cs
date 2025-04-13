@@ -16,11 +16,11 @@ namespace BE_ToDoListApp.Application.Mappers
         public UserMapper()
         {
             CreateMap<SignUpDTO, User>()
-                .ForMember(des => des.Id, src => src.MapFrom(s => Guid.CreateVersion7()))
-                .ForMember(des => des.Password, src => src.MapFrom(s => HashUtil.PasswordHash(s.Password)))
-                .ForMember(des => des.Role, src => src.MapFrom(s => (byte)UserRoleEnum.NORMALUSER))
-                .ForMember(des => des.Status, src => src.MapFrom(s => (byte)UserStatusEnum.ACTIVE))
-                .ForMember(des => des.Gender, src => src.MapFrom(s => (byte)UserGenderEnum.MALE));
+                .ForMember(des => des.Id, opt => opt.MapFrom(s => Guid.CreateVersion7()))
+                .ForMember(des => des.Password, opt => opt.MapFrom(s => HashUtil.PasswordHash(s.Password)))
+                .ForMember(des => des.Role, opt => opt.MapFrom(s => (byte)UserRoleEnum.NORMALUSER))
+                .ForMember(des => des.Status, opt => opt.MapFrom(s => (byte)UserStatusEnum.ACTIVE))
+                .ForMember(des => des.Gender, opt => opt.MapFrom(s => (byte)UserGenderEnum.MALE));
         }
     }
 }

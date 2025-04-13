@@ -11,8 +11,4 @@
     <ProjectReference Include="..\BE_ToDoListApp.SharedLibrary\BE_ToDoListApp.SharedLibrary.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\TaskStatisticDTO\" />
-  </ItemGroup>
-
 </Project>

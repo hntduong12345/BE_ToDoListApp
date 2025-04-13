@@ -17,5 +17,16 @@
             public const string SignUpEndpoint = AuthEndpoint + "/sign-up";
         }
 
+        public static class ToDoTask
+        {
+            public const string ToDoTasksEndpoint = ApiEndpoint + "/to-do-tasks/{userId}";
+        }
+
+        public static class TaskStatistic
+        {
+            public const string TodayStatEndpoint = ApiEndpoint + "/today-stat/{userId}";
+            public const string WeekStatEndpoint = ApiEndpoint + "/week-stat/{userId}";
+        }
+
     }
 }

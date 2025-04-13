@@ -14,6 +14,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 app.UseInfrastructurePolicy();
@@ -32,8 +34,8 @@ app.MapScalarApiReference(options =>
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.Run();

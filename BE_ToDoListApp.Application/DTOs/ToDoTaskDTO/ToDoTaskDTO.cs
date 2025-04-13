@@ -13,6 +13,7 @@ namespace BE_ToDoListApp.Application.DTOs.ToDoTaskDTO
         string Description,
         string Priority,
         string Status,
-        DateOnly CreateDate
+        DateOnly CreateDate,
+        string State
         );
 }

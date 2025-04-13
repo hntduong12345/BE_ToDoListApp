@@ -14,26 +14,22 @@ namespace BE_ToDoListApp.SharedLibrary.DependencyInjections
     {
         public static IServiceCollection AddJwtAuthenticationScheme(this IServiceCollection services, IConfiguration config)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    var key = Encoding.UTF8.GetBytes(config.GetSection("Authentication:Key").Value!);
-                    string issuer = config.GetSection("Authentication:Issuer").Value!;
-                    string audience = config.GetSection("Authentication:Audience").Value!;
-
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = issuer,
-                        ValidAudience = audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(key)
-                    };
-                });
+                    ValidIssuer = config.GetSection("Authentication:Issuer").Value,
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("Authentication:Key").Value!))
+                };
+            });
 
             return services;
         }
