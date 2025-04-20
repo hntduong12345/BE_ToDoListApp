@@ -16,11 +16,16 @@ namespace BE_ToDoListApp.Application.DTOs.UserDTO
         [Required] string Password
         );
 
-    public record SignUpDTO(
-        [Required] string FirstName,
-        [Required] string LastName,
-        string UserName,
-        [Required] string Email,
-        [Required] string Password
-        );
+    public record SignUpDTO
+    {
+        [Required]
+        public string FirstName { get; set; } = null!;
+        [Required]
+        public string LastName { get; set; } = null!;
+        public string? UserName { get; set; }
+        [Required]
+        public string Email { get; set; } = null!;
+        [Required] 
+        public string Password { get; set; } = null!;
+    };
 }

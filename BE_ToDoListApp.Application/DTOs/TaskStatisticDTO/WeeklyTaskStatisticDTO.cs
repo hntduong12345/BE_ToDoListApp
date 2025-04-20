@@ -17,10 +17,11 @@ namespace BE_ToDoListApp.Application.DTOs.TaskStatisticDTO
         decimal NotStarted
         );
 
-    public record WeekDaysStat(
-        string Name,
-        decimal Completed,
-        decimal InProgress,
-        decimal NotStarted
-        );
+    public record WeekDaysStat
+    {
+        public string? Name { get; set; }
+        public decimal Completed { get; set; }
+        public decimal InProgress { get; set; }
+        public decimal NotStarte { get; set; }
+    };
 }

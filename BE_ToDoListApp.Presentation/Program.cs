@@ -1,3 +1,4 @@
+using BE_ToDoListApp.Application.Utils;
 using BE_ToDoListApp.Infrastructure.DependencyInjections;
 using Scalar.AspNetCore;
 
@@ -16,6 +17,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAuthorization();
 
+EncryptUtil.Init(builder.Configuration);
 
 var app = builder.Build();
 app.UseInfrastructurePolicy();

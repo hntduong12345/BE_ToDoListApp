@@ -35,12 +35,5 @@ namespace BE_ToDoListApp.Presentation.Controllers
             await _toDoTaskService.ModifyTasks(data, userId, date);
             return Ok("Action Success");
         }
-
-        [Authorize(Roles = "NORMALUSER")]
-        [HttpGet("/test")]
-        public async Task<IActionResult> Test()
-        {
-            return Ok("Auth Success");
-        }
     }
 }

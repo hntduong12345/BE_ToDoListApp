@@ -8,7 +8,9 @@ namespace BE_ToDoListApp.Application.Interfaces
 {
     public interface IBackgroundTaskQueue
     {
-        void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
-        Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken);
+        void QueueBackgroundWorkItem(BackgroundWorkItem workItem);
+        Task<BackgroundWorkItem> DequeueAsync(CancellationToken cancellationToken);
     }
+
+    public delegate Task BackgroundWorkItem(CancellationToken token, IUnitOfWork unitOfWork);
 }

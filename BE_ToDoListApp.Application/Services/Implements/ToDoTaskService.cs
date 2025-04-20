@@ -2,6 +2,7 @@
 using BE_ToDoListApp.Application.DTOs.ToDoTaskDTO;
 using BE_ToDoListApp.Application.Interfaces;
 using BE_ToDoListApp.Application.Services.Interfaces;
+using BE_ToDoListApp.Application.Utils;
 using BE_ToDoListApp.Domain.Entities;
 using BE_ToDoListApp.Domain.Enums.ToDoTaskEnums;
 using BE_ToDoListApp.SharedLibrary.Utils;
@@ -13,7 +14,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
     {
         private readonly IBackgroundTaskQueue _taskQueue;
 
-        public ToDoTaskService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBackgroundTaskQueue taskQueue) 
+        public ToDoTaskService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor, IBackgroundTaskQueue taskQueue)
             : base(unitOfWork, mapper, httpContextAccessor)
         {
             _taskQueue = taskQueue;
@@ -21,7 +22,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
         public async Task<List<ToDoTaskDTO>> GetDateTasks(string userId, DateOnly date)
         {
-            Guid realUserId = HashUtil.DecryptId(userId);
+            Guid realUserId = Guid.Parse(EncryptUtil.Decrypt(userId));
 
             List<ToDoTask> tasks = (List<ToDoTask>)await _unitOfWork.GetRepository<ToDoTask>()
                 .GetListAsync(predicate: t => t.UserId == realUserId &&
@@ -34,7 +35,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
         public async Task ModifyTasks(List<ToDoTaskDTO> data, string userId, DateOnly date)
         {
-            Guid realUserId = HashUtil.DecryptId(userId);
+            Guid realUserId = Guid.Parse(EncryptUtil.Decrypt(userId));
 
             List<ToDoTask> updatedTasks = _mapper.Map<List<ToDoTask>>(data.Where(d => d.State == "Updated"));
             List<ToDoTask> deletedTasks = _mapper.Map<List<ToDoTask>>(data.Where(d => d.State == "Deleted"));
@@ -50,39 +51,66 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
             //Delete
             _unitOfWork.GetRepository<ToDoTask>().DeleteRangeAsync(deletedTasks);
-            bool check = await _unitOfWork.CommitAsync() > 1;
+            await _unitOfWork.CommitAsync();
 
-            if (!check) throw new Exception("An error occured when modify tasks");
+            //if (!check) throw new Exception("An error occured when modify tasks");
 
 
             //Execute BG service for updating Statistic
-            _taskQueue.QueueBackgroundWorkItem(async token =>
+            _taskQueue.QueueBackgroundWorkItem(async (token, uow) =>
             {
-                await Task.Delay(2000, token);
-                await ChangeStatistic(realUserId, date);
+                await Task.Delay(3000, token);
+                await ChangeStatistic(realUserId, date, uow);
             });
         }
 
-        private async Task ChangeStatistic(Guid userId, DateOnly date)
+        private async Task ChangeStatistic(Guid userId, DateOnly date, IUnitOfWork unitOfWork)
         {
-            TaskStatistic statistic = await _unitOfWork.GetRepository<TaskStatistic>()
+            bool isUpdate = true;
+            TaskStatistic statistic = await unitOfWork.GetRepository<TaskStatistic>()
                 .GetAsync(predicate: t => t.UserId == userId && t.CalcDate == date);
 
-            List<ToDoTask> todoTasks = (List<ToDoTask>)await _unitOfWork.GetRepository<ToDoTask>().
+            if (statistic == null)
+            {
+                isUpdate = false;
+                statistic = new TaskStatistic()
+                {
+                    Id = Guid.CreateVersion7(),
+                    CalcDate = date,
+                    Completed = 0,
+                    InProgress = 0,
+                    NotStarted = 0,
+                    UserId = userId
+                };
+            }
+
+            List<ToDoTask> todoTasks = (List<ToDoTask>)await unitOfWork.GetRepository<ToDoTask>().
                 GetListAsync(predicate: t => t.UserId == userId && t.CreateDate == date);
 
             int totalTasks = todoTasks.Count();
-            int totalCompleted = todoTasks.Where(t => t.Status == (byte)ToDoTaskStatusEnum.Completed).Count();
-            int totalinProgress = todoTasks.Where(t => t.Status == (byte)ToDoTaskStatusEnum.InProgress).Count();
-            int totalNotStarted = todoTasks.Where(t => t.Status == (byte)ToDoTaskStatusEnum.NotStarted).Count();
+            if (totalTasks == 0)
+            {
+                statistic.Completed = 0;
+                statistic.InProgress = 0;
+                statistic.NotStarted = 0;
+            }
+            else
+            {
+                int totalCompleted = todoTasks.Where(t => t.Status == (byte)ToDoTaskStatusEnum.Completed).Count();
+                int totalinProgress = todoTasks.Where(t => t.Status == (byte)ToDoTaskStatusEnum.InProgress).Count();
+                int totalNotStarted = todoTasks.Where(t => t.Status == (byte)ToDoTaskStatusEnum.NotStarted).Count();
 
-            statistic.Completed = Math.Round((decimal)totalCompleted / totalTasks, 3);
-            statistic.InProgress = Math.Round((decimal)totalinProgress / totalTasks, 3);
-            statistic.NotStarted = Math.Round((decimal)totalNotStarted / totalTasks, 3);
+                statistic.Completed = Math.Round((decimal)totalCompleted / totalTasks, 3);
+                statistic.InProgress = Math.Round((decimal)totalinProgress / totalTasks, 3);
+                statistic.NotStarted = Math.Round((decimal)totalNotStarted / totalTasks, 3);
+            }
 
-            _unitOfWork.GetRepository<TaskStatistic>().UpdateAsync(statistic);
+            if (isUpdate)
+                unitOfWork.GetRepository<TaskStatistic>().UpdateAsync(statistic);
+            else
+                await unitOfWork.GetRepository<TaskStatistic>().InsertAsync(statistic);
 
-            await _unitOfWork.CommitAsync();
+            await unitOfWork.CommitAsync();
         }
 
     }

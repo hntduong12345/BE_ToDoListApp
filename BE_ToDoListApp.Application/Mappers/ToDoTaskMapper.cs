@@ -26,4 +26,4 @@ namespace BE_ToDoListApp.Application.Mappers
                 .ForMember(des => des.Priority, opt => opt.MapFrom(src => EnumUtil.GetEnumName<ToDoTaskPriorityEnum>(src.Priority)));
         }
     }
-}
+}   

@@ -12,7 +12,7 @@ namespace BE_ToDoListApp.Domain.Entities
         public Guid Id { get; set; }
         public string Title { get; set; } = null!;
         public string? Objective { get; set; }
-        public string? Descrption { get; set; }
+        public string? Description { get; set; }
         public byte Priority { get; set; }
         public byte Status { get; set; }
         public DateOnly CreateDate { get; set; }

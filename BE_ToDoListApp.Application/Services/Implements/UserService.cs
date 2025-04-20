@@ -37,7 +37,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
             string token = JwtUtil.GenerateJwtToken(user);
 
-            return new AuthDTO(token, HashUtil.EncryptId(user.Id));
+            return new AuthDTO(token, EncryptUtil.Encrypt(user.Id.ToString()));
         }
 
         public async Task<AuthDTO> SignUp(SignUpDTO data)
@@ -54,7 +54,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
             string token = JwtUtil.GenerateJwtToken(createdUser);
 
-            return new AuthDTO(token, HashUtil.EncryptId(createdUser.Id));
+            return new AuthDTO(token, EncryptUtil.Encrypt(createdUser.Id.ToString()));
         }
         #endregion
     }

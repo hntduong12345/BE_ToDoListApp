@@ -23,7 +23,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
         public async Task<ToDayTaskStatisticDTO> GetToDayStatistic(string userId)
         {
-            Guid realUserId = HashUtil.DecryptId(userId);
+            Guid realUserId = Guid.Parse(EncryptUtil.Decrypt(userId));
 
             TaskStatistic stat = await _unitOfWork.GetRepository<TaskStatistic>()
                 .GetAsync(predicate: t => t.UserId == realUserId && 
@@ -36,7 +36,7 @@ namespace BE_ToDoListApp.Application.Services.Implements
 
         public async Task<WeeklyTaskStatisticDTO> GetWeeklyStatistic(string userId)
         {
-            Guid realUserId = HashUtil.DecryptId(userId);
+            Guid realUserId = Guid.Parse(EncryptUtil.Decrypt(userId));
 
             List<DateOnly> weekDays = DaysUtil.GetWeekDays(DateOnly.FromDateTime(DateTime.Now));
 

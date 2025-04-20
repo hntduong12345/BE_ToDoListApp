@@ -5,23 +5,19 @@ namespace BE_ToDoListApp.Infrastructure.BackGroundServices.Services
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
-        private readonly Channel<Func<CancellationToken, Task>> _queue;
+        private readonly Channel<BackgroundWorkItem> _queue = Channel.CreateUnbounded<BackgroundWorkItem>();
 
-        public BackgroundTaskQueue()
+        public void QueueBackgroundWorkItem(BackgroundWorkItem workItem)
         {
-            _queue = Channel.CreateUnbounded<Func<CancellationToken, Task>>();
-        }
+            if (workItem == null)
+                throw new ArgumentNullException(nameof(workItem));
 
-        public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
-        {
-            if (workItem == null) throw new ArgumentNullException(nameof(workItem));
             _queue.Writer.TryWrite(workItem);
         }
 
-        public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
+        public async Task<BackgroundWorkItem> DequeueAsync(CancellationToken cancellationToken)
         {
-            var workItem = await _queue.Reader.ReadAsync(cancellationToken);
-            return workItem;
+            return await _queue.Reader.ReadAsync(cancellationToken);
         }
     }
 }
