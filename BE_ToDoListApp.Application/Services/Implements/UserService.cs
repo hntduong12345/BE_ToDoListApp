@@ -16,7 +16,51 @@ namespace BE_ToDoListApp.Application.Services.Implements
         {
         }
 
-        #region Authentication
+        #region User Functions
+        public async Task<UserDTO> GetUserInfo(string userId)
+        {
+            Guid realId = Guid.Parse(EncryptUtil.Decrypt(userId));
+            User user = await _unitOfWork.GetRepository<User>()
+                .GetAsync(predicate: u => u.Id == realId);
+
+            if (user == null) throw new BadHttpRequestException("User is not found");
+
+            return _mapper.Map<UserDTO>(user);
+        }
+
+        public async Task UpdateUserInfo(string userId, UserDTO updatedData)
+        {
+            Guid realId = Guid.Parse(EncryptUtil.Decrypt(userId));
+            User user = await _unitOfWork.GetRepository<User>()
+               .GetAsync(predicate: u => u.Id == realId);
+
+            if (user == null) throw new BadHttpRequestException("User is not found");
+
+            _mapper.Map(updatedData, user);
+            _unitOfWork.GetRepository<User>().UpdateAsync(user);
+
+            bool check = await _unitOfWork.CommitAsync() > 0;
+            if (!check) throw new Exception("Exception occur when updating user");
+        }
+
+        public async Task UpdatePassword(string userId, string newPass)
+        {
+            Guid realId = Guid.Parse(EncryptUtil.Decrypt(userId));
+            User user = await _unitOfWork.GetRepository<User>()
+               .GetAsync(predicate: u => u.Id == realId);
+
+            if (user == null) throw new BadHttpRequestException("User is not found");
+
+            user.Password = HashUtil.PasswordHash(newPass);
+
+            _unitOfWork.GetRepository<User>().UpdateAsync(user);
+
+            bool check = await _unitOfWork.CommitAsync() > 0;
+            if (!check) throw new Exception("Exception occur when updating user");
+        }
+        #endregion
+
+        #region Authorization
         public async Task<AuthDTO> SignIn(SignInDTO data)
         {
             User user = await _unitOfWork.GetRepository<User>().GetAsync(

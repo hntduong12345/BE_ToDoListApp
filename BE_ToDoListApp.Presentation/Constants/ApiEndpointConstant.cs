@@ -28,5 +28,11 @@
             public const string WeekStatEndpoint = ApiEndpoint + "/week-stat/{userId}";
         }
 
+        public static class User
+        {
+            public const string UsersEndpoint = ApiEndpoint + "/users";
+            public const string UserEndpoint = UsersEndpoint + "/{userId}";
+            public const string UserPasswordEndpoint = UserEndpoint + "/password";
+        }
     }
 }
